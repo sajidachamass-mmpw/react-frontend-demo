@@ -26,6 +26,12 @@ class index extends React.Component<MyProps, MyState> {
         this.getUserData();
     }
     deleteUser(id:any){
+
+        const token = localStorage.getItem('auth') ;
+        const headers = {
+            Authorization: 'Bearer '+token
+        }
+
         Swal.fire({
             title: 'Are you sure you want to delete this user?',
             showDenyButton: false,
@@ -34,7 +40,7 @@ class index extends React.Component<MyProps, MyState> {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                axios.delete('http://react-laravel.com/api/user/'+id).then((res:any)=> {
+                axios.delete(`http://react-laravel.com/api/users/${id}`,{headers}).then((res:any)=> {
                     window.location.reload();
                 })
             } else if (result.isDenied) {
@@ -74,8 +80,7 @@ class index extends React.Component<MyProps, MyState> {
                         <Link to={`/user/edit/${user.id}`} >
                             <i className="fa fa-edit" > </i>
                         </Link>
-                        <i className="fa fa-trash" style={{color: "red","marginLeft":"10px"}} onClick={()=>user.deleteUser(user.id)}> </i>
-
+                        <i className="fa fa-trash" style={{color: "red","marginLeft":"10px"}} onClick={()=>userList.deleteUser(user.id)}> </i>
                     </td>
                 </tr>
             )
