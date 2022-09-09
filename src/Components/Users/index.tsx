@@ -2,40 +2,30 @@ import React from 'react';
 import axios from 'axios';
 import {Link} from "react-router-dom";
 import Swal from 'sweetalert2';
+import Pagination from 'react-js-pagination';
 
 
 type MyProps = {
+    // using `interface` is also ok
+    message: string;
 };
 type MyState = {
-    items:Array<any>;
+    users:Array<any>;
+    activePage:any;
+    count:any;
 };
 
 class index extends React.Component<MyProps, MyState> {
-
-    constructor(props:MyProps) {
-        super(props);
-
-        this.state = {
-            items: [],
-        };
-    }
+    state: MyState = {
+        // optional second annotation for better type inference
+        users: [],
+        activePage: 1,
+        count:0,
+    };
     componentDidMount() {
-
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-        axios.get('http://react-laravel.com/api/users',{headers})
-            .then((res:any) => {
-                this.setState({items: res.data.data});
-            })
+        this.getUserData();
     }
     deleteUser(id:any){
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
         Swal.fire({
             title: 'Are you sure you want to delete this user?',
             showDenyButton: false,
@@ -44,7 +34,7 @@ class index extends React.Component<MyProps, MyState> {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                axios.delete(`http://react-laravel.com/api/users/${id}`,{headers}).then((res:any)=> {
+                axios.delete('http://react-laravel.com/api/user/'+id).then((res:any)=> {
                     window.location.reload();
                 })
             } else if (result.isDenied) {
@@ -53,21 +43,38 @@ class index extends React.Component<MyProps, MyState> {
         });
 
     }
-    render() {
-        let user=this;
-        const renderItems = this.state.items.map(function(item, i) {
 
-            const userRoles = item.roles.join("- ");
+    getUserData(pageNumber=1){
+        console.log(pageNumber);
+        this.setState({activePage: pageNumber});
+        const token = localStorage.getItem('auth') ;
+        const headers = {
+            Authorization: 'Bearer '+token
+        }
+
+        const url=`http://react-laravel.com/api/users?page=${pageNumber}`;
+
+        axios.get(url,{headers})
+            .then((res:any) => {
+                this.setState({users: res.data.users,count:res.data.count});
+            })
+
+    }
+    render() {
+        let userList=this;
+        console.log(this.state.users);
+        const renderItems = this.state.users.map(function(user, i) {
+            const userRoles = user.roles.join("- ");
             return (
-                <tr  key={i}>
-                    <td >{item.name}</td>
-                    <td >{item.email}</td>
+                <tr   key={i}>
+                    <td >{user.name}</td>
+                    <td >{user.email}</td>
                     <td >{userRoles}</td>
                     <td >
-                        <Link to={`/user/edit/${item.id}`} >
+                        <Link to={`/user/edit/${user.id}`} >
                             <i className="fa fa-edit" > </i>
                         </Link>
-                        <i className="fa fa-trash" style={{color: "red","marginLeft":"10px"}} onClick={()=>user.deleteUser(item.id)}> </i>
+                        <i className="fa fa-trash" style={{color: "red","marginLeft":"10px"}} onClick={()=>user.deleteUser(user.id)}> </i>
 
                     </td>
                 </tr>
@@ -100,6 +107,20 @@ class index extends React.Component<MyProps, MyState> {
                         {renderItems}
                         </tbody>
                     </table>
+                </div>
+                <div className="row">
+                    <div className={"col-12 "}>
+                        <Pagination
+                            activePage={this.state.activePage}
+                            itemsCountPerPage={10}
+                            totalItemsCount={this.state.count}
+                            pageRangeDisplayed={3}
+                            onChange={this.getUserData.bind(this)}
+                            itemClass="page-item"
+                            linkClass="page-link"
+                            innerClass="pagination page"
+                        />
+                    </div>
                 </div>
             </div>
         );

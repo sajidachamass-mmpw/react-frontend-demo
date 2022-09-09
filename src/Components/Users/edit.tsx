@@ -59,6 +59,8 @@ class edit extends React.Component<MyProps, MyState> {
 
                 user.setState({roles: renderRoles});
 
+
+
                 /*Get User details */
                 axios.get(`http://react-laravel.com/api/users/${this.state.userId}/edit`,{headers})
                     .then(res => {

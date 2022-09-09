@@ -2,28 +2,41 @@ import React from 'react';
 import axios from 'axios';
 import {Link} from "react-router-dom";
 import Swal from 'sweetalert2';
+import Pagination from "react-js-pagination";
 
 type MyProps = {
 };
 type MyState = {
     roles:Array<any>;
+    activePage:any;
+    count:any;
 };
 
 class index extends React.Component<MyProps, MyState> {
     constructor(props:MyProps) {
         super(props);
         this.state = {
-            roles: []
+            roles: [],
+            activePage: 1,
+            count:0,
         }
     }
     componentDidMount() {
+        this.getRoleData();
+    }
+    getRoleData(pageNumber=1){
+
+        this.setState({activePage: pageNumber});
         const token = localStorage.getItem('auth') ;
         const headers = {
             Authorization: 'Bearer '+token
         }
-        axios.get('http://react-laravel.com/api/roles',{headers})
-            .then(res => {
-                this.setState({roles: res.data.data});
+
+        const url=`http://react-laravel.com/api/roles?page=${pageNumber}`;
+
+        axios.get(url,{headers})
+            .then((res:any) => {
+                this.setState({roles: res.data.roles,count:res.data.count});
             })
     }
 
@@ -92,6 +105,20 @@ class index extends React.Component<MyProps, MyState> {
                         {renderItems}
                         </tbody>
                     </table>
+                </div>
+                <div className="row">
+                    <div className={"col-12 "}>
+                        <Pagination
+                            activePage={this.state.activePage}
+                            itemsCountPerPage={10}
+                            totalItemsCount={this.state.count}
+                            pageRangeDisplayed={3}
+                            onChange={this.getRoleData.bind(this)}
+                            itemClass="page-item"
+                            linkClass="page-link"
+                            innerClass="pagination page"
+                        />
+                    </div>
                 </div>
             </div>
         );

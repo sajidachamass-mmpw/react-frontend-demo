@@ -45,7 +45,7 @@ class create extends React.Component<MyProps, MyState>  {
 
         axios.get('http://react-laravel.com/api/roles',{headers})
             .then((res:any) => {
-                const renderRoles = res.data.data.map(function (role:any,i:any) {
+                const renderRoles = res.data.roles.map(function (role:any,i:any) {
                     if (i === 0) {
                         user.setState({role: role.id});
                     }
