@@ -46,8 +46,8 @@ class edit extends React.Component<MyProps, MyState> {
         /*Get Roles*/
         axios.get('http://react-laravel.com/api/roles',{headers})
             .then(res => {
-                user.setState({userRoles: res.data.data});
-                const renderRoles = res.data.data.map(function (role:any, i:any) {
+                user.setState({userRoles: res.data.roles});
+                const renderRoles = res.data.roles.map(function (role:any, i:any) {
                     if (i === 0) {
                         user.setState({role: role.id});
                     }
@@ -118,8 +118,6 @@ class edit extends React.Component<MyProps, MyState> {
             console.log(err);
         });
     }
-
-
 
     render() {
         return (
