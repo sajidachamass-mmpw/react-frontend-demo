@@ -8,6 +8,8 @@ type MyState = {
     name:  '',
     permissions:[],
     roleId :'',
+    rolePermissions:Array<any>,
+    checkedPermissions:Array<any>,
 };
 
 class edit extends React.Component<MyProps, MyState> {
@@ -19,6 +21,8 @@ class edit extends React.Component<MyProps, MyState> {
             name:  '',
             permissions:[],
             roleId :'',
+            rolePermissions:[],
+            checkedPermissions:[],
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSubmitRolePermission=this.handleSubmitRolePermission.bind(this);
@@ -28,6 +32,15 @@ class edit extends React.Component<MyProps, MyState> {
 
     componentDidMount() {
        this.getParams();
+        const token = localStorage.getItem('auth') ;
+        const headers = {
+            Authorization: 'Bearer '+token
+        }
+
+        axios.get(`http://react-laravel.com/api/permissions`,{headers})
+            .then(res => {
+                this.setState({permissions :res.data.permissionsList});
+            });
     }
 
     getParams = () => {
@@ -48,7 +61,9 @@ class edit extends React.Component<MyProps, MyState> {
                      const data=res.data.data;
 
                      this.setState({name : data.name});
-                     const renderPermissions = data.permissions.map(function (perm:any, i:any) {
+
+
+                   /*  const renderPermissions = data.permissions.map(function (perm:any, i:any) {
                          return (
                              <div className="col-4 mb-5 text-left" key={i}>
                                  <label className="checkbox" >
@@ -57,8 +72,38 @@ class edit extends React.Component<MyProps, MyState> {
                              </div>
 
                          )
+                     });*/
+                     const renderPermissions = permiss.state.permissions.map(function (perm:any, i:any) {
+
+                         if(data.permissions.some((value:any) => value.id === perm.id)){
+
+                             permiss.setState(previousState => ({
+                                 checkedPermissions: [...previousState.checkedPermissions, perm.id]
+                             }));
+                             return (
+                                 <div className="col-4 mb-5 text-left" key={i}>
+                                     <label className="checkbox" >
+                                         <input name="permissions" type="checkbox"  value={perm.id} checked onChange={(event)=> permiss.permission(event, perm.id)}/>
+                                         <span></span>{perm.name}</label>
+                                 </div>
+
+                             )
+                         }
+                         else
+                         {
+                             return (
+                             <div className="col-4 mb-5 text-left" key={i}>
+                                 <label className="checkbox" >
+                                     <input name="permissions" type="checkbox"  value={perm.id}  onChange={(event)=> permiss.permission(event, perm.id)}/>
+                                     <span></span>{perm.name}</label>
+                             </div>
+
+                         )
+
+                         }
+
                      });
-                     permiss.setState({permissions: renderPermissions});
+                     permiss.setState({rolePermissions: renderPermissions});
                  });
              });
          return null;
@@ -87,7 +132,24 @@ class edit extends React.Component<MyProps, MyState> {
         });
     }
     permission(e:any,id:any){
-        console.log(e);
+
+        if(e.target.checked){
+            this.setState(previousState => ({
+                checkedPermissions: [...previousState.checkedPermissions, id]
+            }), () => {
+
+            });
+
+        }
+        else
+        {
+            const index = this.state.checkedPermissions.indexOf(id);
+            console.log(index);
+
+            if (index > -1) {
+                this.state.checkedPermissions.splice(index, 1);
+            }
+        }
     }
 
     handleSubmitRolePermission(e:any){
@@ -145,7 +207,7 @@ class edit extends React.Component<MyProps, MyState> {
                                         <div className="row">
                                             <div className="col-12">
                                                 <div className="form-group row">
-                                                    {this.state.permissions}
+                                                    {this.state.rolePermissions}
                                                 </div>
                                             </div>
                                         </div>
