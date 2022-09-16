@@ -83,7 +83,7 @@ class edit extends React.Component<MyProps, MyState> {
                              return (
                                  <div className="col-4 mb-5 text-left" key={i}>
                                      <label className="checkbox" >
-                                         <input name="permissions" type="checkbox"  value={perm.id} checked onChange={(event)=> permiss.permission(event, perm.id)}/>
+                                         <input name="permissions[]" type="checkbox"  value={perm.id} checked={true} onChange={(event)=> permiss.permission(event, perm.id,i)}/>
                                          <span></span>{perm.name}</label>
                                  </div>
 
@@ -94,7 +94,7 @@ class edit extends React.Component<MyProps, MyState> {
                              return (
                              <div className="col-4 mb-5 text-left" key={i}>
                                  <label className="checkbox" >
-                                     <input name="permissions" type="checkbox"  value={perm.id}  onChange={(event)=> permiss.permission(event, perm.id)}/>
+                                     <input name="permissions[]" type="checkbox"  value={perm.id}  onChange={(event)=> permiss.permission(event, perm.id,i)}/>
                                      <span></span>{perm.name}</label>
                              </div>
 
@@ -131,21 +131,26 @@ class edit extends React.Component<MyProps, MyState> {
             console.log(err);
         });
     }
-    permission(e:any,id:any){
+    permission(e:any,id:any,key:any){
 
+
+        
         if(e.target.checked){
             this.setState(previousState => ({
                 checkedPermissions: [...previousState.checkedPermissions, id]
             }), () => {
-
             });
 
         }
         else
-        {
-            const index = this.state.checkedPermissions.indexOf(id);
-            console.log(index);
+        { //$()
 
+            const el = document.querySelector("[value='9']") as HTMLInputElement;
+            console.log(el);
+            console.log(el.removeAttribute("checked"));
+
+
+            const index = this.state.checkedPermissions.indexOf(id);
             if (index > -1) {
                 this.state.checkedPermissions.splice(index, 1);
             }
@@ -154,6 +159,18 @@ class edit extends React.Component<MyProps, MyState> {
 
     handleSubmitRolePermission(e:any){
         e.preventDefault();
+        console.log(this.state.checkedPermissions);
+        const token = localStorage.getItem('auth') ;
+        const headers = {
+            Authorization: 'Bearer '+token
+        }
+
+        axios.put(`http://react-laravel.com/api/rolePermissions/${this.state.roleId}`,{
+            'permissions':this.state.checkedPermissions
+        },{headers})
+            .then(res => {
+                console.log(res);
+            });
     }
 
     render() {
