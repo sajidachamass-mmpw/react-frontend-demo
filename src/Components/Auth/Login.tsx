@@ -51,9 +51,9 @@ class Login extends React.Component<MyProps, MyState> {
     }
     handleSubmit(event:any) {
         event.preventDefault();
-        axios.get('http://react-laravel.com/sanctum/csrf-cookie')
+        axios.get('http://react-demo-backend-ch.test/sanctum/csrf-cookie')
             .then(response => {
-                axios.post('http://react-laravel.com/api/login',{
+                axios.post('http://react-demo-backend-ch.test/api/login',{
                     email: this.state.email,
                     password: this.state.password}).then((res:any) => {
                     let token=res.data.access_token;

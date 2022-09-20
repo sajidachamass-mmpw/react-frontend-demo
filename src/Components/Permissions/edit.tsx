@@ -33,7 +33,7 @@ class edit extends React.Component<MyProps, MyState> {
                 Authorization: 'Bearer '+token
             }
 
-            axios.get(`http://react-laravel.com/api/permissions/${this.state.permId}/edit`,{headers})
+            axios.get(`http://react-demo-backend-ch.test/api/permissions/${this.state.permId}/edit`,{headers})
                 .then(res => {
                     const data=res.data.data;
                     this.setState({name : data.name});
@@ -56,7 +56,7 @@ class edit extends React.Component<MyProps, MyState> {
             Authorization: 'Bearer '+token
         }
 
-        axios.put(`http://react-laravel.com/api/permissions/${this.state.permId}`,{
+        axios.put(`http://react-demo-backend-ch.test/api/permissions/${this.state.permId}`,{
             name     :  this.state.name,
         },{headers}).then(res => {
             window.location.reload();

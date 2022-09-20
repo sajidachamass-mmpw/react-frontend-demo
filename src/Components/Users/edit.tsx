@@ -44,7 +44,7 @@ class edit extends React.Component<MyProps, MyState> {
         }
 
         /*Get Roles*/
-        axios.get('http://react-laravel.com/api/roles',{headers})
+        axios.get('http://react-demo-backend-ch.test/api/roles',{headers})
             .then(res => {
                 user.setState({userRoles: res.data.roles});
                 const renderRoles = res.data.roles.map(function (role:any, i:any) {
@@ -62,7 +62,7 @@ class edit extends React.Component<MyProps, MyState> {
 
 
                 /*Get User details */
-                axios.get(`http://react-laravel.com/api/users/${this.state.userId}/edit`,{headers})
+                axios.get(`http://react-demo-backend-ch.test/api/users/${this.state.userId}/edit`,{headers})
                     .then(res => {
                         const data=res.data.data;
                         if(data){
@@ -107,7 +107,7 @@ class edit extends React.Component<MyProps, MyState> {
             Authorization: 'Bearer '+token
         }
 
-        axios.put(`http://react-laravel.com/api/users/${this.state.userId}`,{
+        axios.put(`http://react-demo-backend-ch.test/api/users/${this.state.userId}`,{
             name     :  this.state.name,
             email    : this.state.email,
             password : this.state.password,

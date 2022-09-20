@@ -31,7 +31,7 @@ class index extends  React.Component<MyProps, MyState>  {
             Authorization: 'Bearer '+token
         }
 
-        const url=`http://react-laravel.com/api/permissions?page=${pageNumber}`;
+        const url=`http://react-demo-backend-ch.test/api/permissions?page=${pageNumber}`;
 
         axios.get(url,{headers})
             .then((res:any) => {
@@ -57,7 +57,7 @@ class index extends  React.Component<MyProps, MyState>  {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                axios.delete(`http://react-laravel.com/api/permissions/${id}`,{headers}).then(res => {
+                axios.delete(`http://react-demo-backend-ch.test/api/permissions/${id}`,{headers}).then(res => {
                     window.location.reload();
                 })
             } else if (result.isDenied) {

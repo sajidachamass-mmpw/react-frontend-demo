@@ -34,7 +34,7 @@ class create extends React.Component<MyProps, MyState> {
             Authorization: 'Bearer '+token
         }
 
-        axios.post('http://react-laravel.com/api/roles',{
+        axios.post('http://react-demo-backend-ch.test/api/roles',{
             name:  this.state.name
         },{headers}).then(res => {
             window.location.href = "/roles";

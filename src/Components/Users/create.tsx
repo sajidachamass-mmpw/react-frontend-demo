@@ -43,7 +43,7 @@ class create extends React.Component<MyProps, MyState>  {
             Authorization: 'Bearer '+token
         }
 
-        axios.get('http://react-laravel.com/api/roles',{headers})
+        axios.get('http://react-demo-backend-ch.test/api/roles',{headers})
             .then((res:any) => {
                 const renderRoles = res.data.roles.map(function (role:any,i:any) {
                     if (i === 0) {
@@ -78,7 +78,7 @@ class create extends React.Component<MyProps, MyState>  {
             Authorization: 'Bearer '+token
         }
 
-        axios.post('http://react-laravel.com/api/users',{
+        axios.post('http://react-demo-backend-ch.test/api/users',{
             name:  this.state.name,
             email: this.state.email,
             password: this.state.password,
