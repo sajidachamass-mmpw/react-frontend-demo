@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import {token} from "../../global";
 
 type MyProps = {
 };
@@ -28,12 +29,7 @@ class edit extends React.Component<MyProps, MyState> {
         this.setState({
             permId: this.params.match.params.id
         },function() {
-            const token = localStorage.getItem('auth') ;
-            const headers = {
-                Authorization: 'Bearer '+token
-            }
-
-            axios.get(`http://react-demo-backend-ch.test/api/permissions/${this.state.permId}/edit`,{headers})
+            axios.get(process.env.REACT_APP_URL+`permissions/${this.state.permId}/edit`,token)
                 .then(res => {
                     const data=res.data.data;
                     this.setState({name : data.name});
@@ -51,14 +47,9 @@ class edit extends React.Component<MyProps, MyState> {
 
     handleSubmit(e:any) {
         e.preventDefault();
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
-        axios.put(`http://react-demo-backend-ch.test/api/permissions/${this.state.permId}`,{
+        axios.put(process.env.REACT_APP_URL+`permissions/${this.state.permId}`,{
             name     :  this.state.name,
-        },{headers}).then(res => {
+        },token).then(res => {
             window.location.reload();
         }).catch(err => {
             console.log(err);

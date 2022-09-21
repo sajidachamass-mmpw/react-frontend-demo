@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import {token} from "../../global";
 
 type MyProps = {
 };
@@ -38,12 +39,7 @@ class create extends React.Component<MyProps, MyState>  {
     componentDidMount() {
         let user = this;
 
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
-        axios.get('http://react-demo-backend-ch.test/api/roles',{headers})
+        axios.get(process.env.REACT_APP_URL+`roles`,token)
             .then((res:any) => {
                 const renderRoles = res.data.roles.map(function (role:any,i:any) {
                     if (i === 0) {
@@ -73,16 +69,11 @@ class create extends React.Component<MyProps, MyState>  {
     handleSubmit(event:any) {
         event.preventDefault();
 
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
-        axios.post('http://react-demo-backend-ch.test/api/users',{
+        axios.post(process.env.REACT_APP_URL+`users`,{
             name:  this.state.name,
             email: this.state.email,
             password: this.state.password,
-            role:this.state.role},{headers}).then((res:any) => {
+            role:this.state.role},token).then((res:any) => {
             window.location.href = "/users";
         }).catch(err => console.log(err));
     }

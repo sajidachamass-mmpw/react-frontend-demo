@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import {token} from "../../global";
 
 type MyProps = {
 };
@@ -29,14 +30,9 @@ class create extends React.Component<MyProps, MyState> {
     handleSubmit(event:any) {
         event.preventDefault();
 
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
-        axios.post('http://react-demo-backend-ch.test/api/roles',{
+        axios.post(process.env.REACT_APP_URL+`roles`,{
             name:  this.state.name
-        },{headers}).then(res => {
+        },token).then(res => {
             window.location.href = "/roles";
         }).catch(err => console.log(err));
     }

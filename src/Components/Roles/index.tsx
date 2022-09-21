@@ -3,6 +3,7 @@ import axios from 'axios';
 import {Link} from "react-router-dom";
 import Swal from 'sweetalert2';
 import Pagination from "react-js-pagination";
+import {token} from "../../global";
 
 type MyProps = {
 };
@@ -27,14 +28,11 @@ class index extends React.Component<MyProps, MyState> {
     getRoleData(pageNumber=1){
 
         this.setState({activePage: pageNumber});
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
 
-        const url=`http://react-demo-backend-ch.test/api/roles?page=${pageNumber}`;
+        const url=process.env.REACT_APP_URL+`roles?page=${pageNumber}`;
 
-        axios.get(url,{headers})
+
+        axios.get(url,token)
             .then((res:any) => {
                 this.setState({roles: res.data.roles,count:res.data.count});
             })
@@ -42,11 +40,6 @@ class index extends React.Component<MyProps, MyState> {
 
     deleteRole(id:any){
         let Vm = this;
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
         Swal.fire({
             title: 'Are you sure you want to delete this role?',
             showDenyButton: false,
@@ -55,7 +48,7 @@ class index extends React.Component<MyProps, MyState> {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                axios.delete(`http://react-demo-backend-ch.test/api/roles/${id}`,{headers}).then(res => {
+                axios.delete(process.env.REACT_APP_URL+`roles/${id}`,token).then(res => {
                     window.location.reload();
                 })
             } else if (result.isDenied) {

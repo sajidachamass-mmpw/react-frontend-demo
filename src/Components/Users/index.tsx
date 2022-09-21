@@ -3,6 +3,7 @@ import axios from 'axios';
 import {Link} from "react-router-dom";
 import Swal from 'sweetalert2';
 import Pagination from 'react-js-pagination';
+import {token} from "../../global";
 
 
 type MyProps = {
@@ -26,12 +27,6 @@ class index extends React.Component<MyProps, MyState> {
         this.getUserData();
     }
     deleteUser(id:any){
-
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
         Swal.fire({
             title: 'Are you sure you want to delete this user?',
             showDenyButton: false,
@@ -40,7 +35,7 @@ class index extends React.Component<MyProps, MyState> {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                axios.delete(`http://react-demo-backend-ch.test/api/users/${id}`,{headers}).then((res:any)=> {
+                axios.delete(process.env.REACT_APP_URL+`users/${id}`,token).then((res:any)=> {
                     window.location.reload();
                 })
             } else if (result.isDenied) {
@@ -51,16 +46,11 @@ class index extends React.Component<MyProps, MyState> {
     }
 
     getUserData(pageNumber=1){
-        console.log(pageNumber);
+
         this.setState({activePage: pageNumber});
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
+        const url=process.env.REACT_APP_URL+`users?page=${pageNumber}`;
 
-        const url=`http://react-demo-backend-ch.test/api/users?page=${pageNumber}`;
-
-        axios.get(url,{headers})
+        axios.get(url,token)
             .then((res:any) => {
                 this.setState({users: res.data.users,count:res.data.count});
             })
@@ -68,7 +58,7 @@ class index extends React.Component<MyProps, MyState> {
     }
     render() {
         let userList=this;
-        console.log(this.state.users);
+
         const renderItems = this.state.users.map(function(user, i) {
             const userRoles = user.roles.join("- ");
             return (

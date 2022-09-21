@@ -1,5 +1,6 @@
 import React ,{useEffect,useState} from "react";
 import axios from "axios";
+import {token} from "../../global";
 
 type MyProps = {
 };
@@ -11,6 +12,8 @@ type MyState = {
     rolePermissions:Array<any>,
     checkedPermissions:Array<any>,
 };
+
+
 
 class edit extends React.Component<MyProps, MyState> {
     private params: any;
@@ -31,13 +34,9 @@ class edit extends React.Component<MyProps, MyState> {
     }
 
     componentDidMount() {
-       this.getParams();
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
+        this.getParams();
 
-        axios.get(`http://react-demo-backend-ch.test/api/permissions`,{headers})
+        axios.get(process.env.REACT_APP_URL+`permissions`,token)
             .then(res => {
                 this.setState({permissions :res.data.permissionsList});
             });
@@ -47,70 +46,51 @@ class edit extends React.Component<MyProps, MyState> {
         this.params = this.props;
         let permiss=this;
 
-         this.setState({
+        this.setState({
             roleId: this.params.match.params.id
         },function() {
-             const token = localStorage.getItem('auth') ;
-             const headers = {
-                 Authorization: 'Bearer '+token
-             }
+            axios.get(process.env.REACT_APP_URL+`roles/${this.state.roleId}/edit`,token)
+                .then(res => {
+                    const data=res.data.data;
 
-             axios.get(`http://react-demo-backend-ch.test/api/roles/${this.state.roleId}/edit`,{headers})
-                 .then(res => {
-                     const data=res.data.data;
+                    this.setState({name : data.name});
 
-                     this.setState({name : data.name});
+                    const renderPermissions = permiss.state.permissions.map(function (perm:any, i:any) {
 
-                     const renderPermissions = permiss.state.permissions.map(function (perm:any, i:any) {
+                        if(data.permissions.some((value:any) => value.id === perm.id)){
 
-                         if(data.permissions.some((value:any) => value.id === perm.id)){
+                            if( !permiss.state.checkedPermissions.includes(perm.id)){
+                                permiss.setState(previousState => ({
+                                    checkedPermissions: [...previousState.checkedPermissions, perm.id]
+                                }));
+                            }
 
-                             if( !permiss.state.checkedPermissions.includes(perm.id)){
-                                 permiss.setState(previousState => ({
-                                     checkedPermissions: [...previousState.checkedPermissions, perm.id]
-                                 }));
-                             }
+                            return (
+                                <div className="col-4 mb-5 text-left" key={i}>
+                                    <label className="checkbox" >
+                                        <input name="permissions" type="checkbox"  value={perm.id} defaultChecked={true} onChange={(event)=> permiss.permission(event, perm.id)}/>
+                                        <span></span>{perm.name}</label>
+                                </div>
 
-                             return (
-                                 <div className="col-4 mb-5 text-left" key={i}>
-                                     <label className="checkbox" >
-<<<<<<< HEAD
-                                         <input name="permissions[]" type="checkbox"  value={perm.id} checked={true} onChange={(event)=> permiss.permission(event, perm.id,i)}/>
-=======
-                                         <input name="permissions" type="checkbox"  value={perm.id} defaultChecked={true} onChange={(event)=> permiss.permission(event, perm.id)}/>
->>>>>>> 45b973b (Add Home Page Component)
-                                         <span></span>{perm.name}</label>
-                                 </div>
+                            )
+                        }
+                        else
+                        {
+                            return (
+                                <div className="col-4 mb-5 text-left" key={i}>
+                                    <label className="checkbox" >
+                                        <input name="permissions" type="checkbox"  value={perm.id}  onChange={(event)=> permiss.permission(event, perm.id)}/>
+                                        <span></span>{perm.name}</label>
+                                </div>
+                            )
 
-                             )
-                         }
-                         else
-                         {
-                             return (
-<<<<<<< HEAD
-                             <div className="col-4 mb-5 text-left" key={i}>
-                                 <label className="checkbox" >
-                                     <input name="permissions[]" type="checkbox"  value={perm.id}  onChange={(event)=> permiss.permission(event, perm.id,i)}/>
-                                     <span></span>{perm.name}</label>
-                             </div>
+                        }
 
-                         )
-=======
-                                 <div className="col-4 mb-5 text-left" key={i}>
-                                     <label className="checkbox" >
-                                         <input name="permissions" type="checkbox"  value={perm.id}  onChange={(event)=> permiss.permission(event, perm.id)}/>
-                                         <span></span>{perm.name}</label>
-                                 </div>
-                             )
->>>>>>> 45b973b (Add Home Page Component)
-
-                         }
-
-                     });
-                     permiss.setState({rolePermissions: renderPermissions});
-                 });
-             });
-         return null;
+                    });
+                    permiss.setState({rolePermissions: renderPermissions});
+                });
+        });
+        return null;
 
     };
 
@@ -122,46 +102,26 @@ class edit extends React.Component<MyProps, MyState> {
     handleSubmit(e:any) {
         e.preventDefault();
 
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
-        axios.put(`http://react-demo-backend-ch.test/api/roles/${this.state.roleId}`,{
+        axios.put(process.env.REACT_APP_URL+`roles/${this.state.roleId}`,{
             name     :  this.state.name,
-        },{headers}).then(res => {
+        },token).then(res => {
             window.location.reload();
         }).catch(err => {
             console.log(err);
         });
     }
-    permission(e:any,id:any,key:any){
+    permission(e:any,id:any){
 
-
-        
         if(e.target.checked){
             this.setState(previousState => ({
                 checkedPermissions: [...previousState.checkedPermissions, id]
             }), () => {
-<<<<<<< HEAD
-=======
                 console.log(this.state.checkedPermissions);
->>>>>>> 45b973b (Add Home Page Component)
             });
 
         }
         else
-<<<<<<< HEAD
-        { //$()
-
-            const el = document.querySelector("[value='9']") as HTMLInputElement;
-            console.log(el);
-            console.log(el.removeAttribute("checked"));
-
-
-=======
         {
->>>>>>> 45b973b (Add Home Page Component)
             const index = this.state.checkedPermissions.indexOf(id);
             if (index > -1) {
                 this.state.checkedPermissions.splice(index, 1);
@@ -173,33 +133,14 @@ class edit extends React.Component<MyProps, MyState> {
 
     handleSubmitRolePermission(e:any){
         e.preventDefault();
-        console.log(this.state.checkedPermissions);
-<<<<<<< HEAD
-=======
-
->>>>>>> 45b973b (Add Home Page Component)
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-<<<<<<< HEAD
-
-        axios.put(`http://react-laravel.com/api/rolePermissions/${this.state.roleId}`,{
-            'permissions':this.state.checkedPermissions
-        },{headers})
-            .then(res => {
-                console.log(res);
-            });
-=======
-        axios.put(`http://react-demo-backend-ch.test/api/rolePermissions/${this.state.roleId}`,{
+        axios.put(process.env.REACT_APP_URL+`rolePermissions/${this.state.roleId}`,{
             permissions     :  this.state.checkedPermissions,
-        },{headers}).then(res => {
+        },token).then(res => {
             window.location.reload();
         }).catch(err => {
             console.log(err);
         });
 
->>>>>>> 45b973b (Add Home Page Component)
     }
 
     render() {

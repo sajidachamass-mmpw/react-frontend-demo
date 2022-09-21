@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import {token} from "../../global";
 
 type MyProps = {
 };
@@ -38,13 +39,9 @@ class edit extends React.Component<MyProps, MyState> {
 
         this.getParams();
 
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
 
         /*Get Roles*/
-        axios.get('http://react-demo-backend-ch.test/api/roles',{headers})
+        axios.get(process.env.REACT_APP_URL+`roles`,token)
             .then(res => {
                 user.setState({userRoles: res.data.roles});
                 const renderRoles = res.data.roles.map(function (role:any, i:any) {
@@ -62,7 +59,7 @@ class edit extends React.Component<MyProps, MyState> {
 
 
                 /*Get User details */
-                axios.get(`http://react-demo-backend-ch.test/api/users/${this.state.userId}/edit`,{headers})
+                axios.get(process.env.REACT_APP_URL+`users/${this.state.userId}/edit`,token)
                     .then(res => {
                         const data=res.data.data;
                         if(data){
@@ -102,17 +99,12 @@ class edit extends React.Component<MyProps, MyState> {
     handleSubmit(e:any) {
         e.preventDefault();
 
-        const token = localStorage.getItem('auth') ;
-        const headers = {
-            Authorization: 'Bearer '+token
-        }
-
-        axios.put(`http://react-demo-backend-ch.test/api/users/${this.state.userId}`,{
+        axios.put(process.env.REACT_APP_URL+`users/${this.state.userId}`,{
             name     :  this.state.name,
             email    : this.state.email,
             password : this.state.password,
             role     : this.state.role
-        },{headers}).then(res => {
+        },token).then(res => {
             window.location.reload();
         }).catch(err => {
             console.log(err);
